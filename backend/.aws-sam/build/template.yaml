@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Rahat - flood relief request backend (API Gateway + Lambda + DynamoDB)
+Parameters:
+  DynamoEndpoint:
+    Type: String
+    Default: ''
+    Description: Leave empty on AWS. Set to the DynamoDB Local URL when testing locally.
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 10
+    MemorySize: 256
+Resources:
+  RahatApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+        - '*'
+        AllowMethods:
+        - GET
+        - POST
+        - PATCH
+        - OPTIONS
+        AllowHeaders:
+        - Content-Type
+  RahatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: RahatFunction
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: RequestsTable
+          CLAIM_TTL_MINUTES: '180'
+          DYNAMO_ENDPOINT:
+            Ref: DynamoEndpoint
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: RequestsTable
+      Events:
+        CreateRequest:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: RahatApi
+            Path: /requests
+            Method: POST
+        ListRequests:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: RahatApi
+            Path: /requests
+            Method: GET
+        UpdateRequest:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: RahatApi
+            Path: /requests/{id}
+            Method: PATCH
+    Metadata:
+      SamResourceId: RahatFunction
+  RequestsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: requestId
+        AttributeType: S
+      KeySchema:
+      - AttributeName: requestId
+        KeyType: HASH
+Outputs:
+  ApiUrl:
+    Description: Base URL of the Rahat API
+    Value:
+      Fn::Sub: https://${RahatApi}.execute-api.${AWS::Region}.amazonaws.com
