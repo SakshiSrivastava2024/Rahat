@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c2d3f">
+<title>Rahat</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<style>
+:root{--navy:#0c2d3f;--teal:#0b6e75;--bg:#f6f3ee;--line:#ddd6ca;--ink:#16232b;--mute:#52626b;--amber:#9a5b00;--green:#1c7a4a;--red:#b3261e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,"Noto Sans Devanagari","Nirmala UI",sans-serif;padding-bottom:76px}
+h1,h2,h3{font-family:Georgia,"Noto Serif Devanagari",serif;margin:0}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #f2a900;outline-offset:2px}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#fff;padding:8px;z-index:20}
+header{background:var(--navy);color:#fff;position:sticky;top:0;z-index:7;border-bottom:4px solid var(--teal)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.hd{display:flex;align-items:center;gap:16px;min-height:60px}
+.brand{flex:1}.brand h1{font-size:25px}.brand p{margin:0;font-size:13px;opacity:.85}
+.lang{background:none;border:1px solid #8fb0bf;color:#fff;border-radius:8px;padding:6px 14px;min-height:42px;font-weight:700;cursor:pointer}
+nav.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);padding-bottom:env(safe-area-inset-bottom)}
+nav.bar button{border:0;background:none;min-height:60px;font-weight:700;font-size:14px;color:var(--mute);cursor:pointer;border-top:4px solid transparent}
+nav.bar button.on{color:var(--teal);border-top-color:var(--teal)}
+main.wrap{padding-top:18px;padding-bottom:28px}
+.hero{background:var(--navy);color:#fff;border-radius:16px;padding:22px 24px;margin-bottom:16px;display:grid;gap:16px}.hero h2{font-size:30px;line-height:1.2;margin:0}.hero p{margin:8px 0 0;color:#cfe3ea;max-width:56ch}.flow{list-style:none;margin:0;padding:0;display:grid;gap:10px}.flow li{display:flex;align-items:center;gap:12px;font-weight:600}.flow b{width:30px;height:30px;border-radius:50%;background:#f2a900;color:var(--navy);display:grid;place-items:center;font-size:15px;flex:none}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin:0;box-shadow:0 1px 2px rgba(12,45,63,.06),0 8px 20px rgba(12,45,63,.05)}
+fieldset.card{min-width:0}
+.card h2,.ct{font-size:21px;padding:0;margin:0 0 12px;display:flex;align-items:center;gap:10px}.ct i{font-style:normal;font-family:system-ui,sans-serif;flex:none;width:32px;height:32px;border-radius:50%;background:var(--teal);color:#fff;font-size:16px;font-weight:700;display:grid;place-items:center}
+.sub{color:var(--mute);font-size:15px;margin:0 0 10px}
+#f{display:grid;gap:14px;grid-auto-flow:dense;align-items:start}
+.needs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.needs label{position:relative;display:block}.needs input{position:absolute;opacity:0;inset:0}
+.needs span{display:flex;align-items:center;gap:12px;min-height:74px;border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff;cursor:pointer;font-weight:700;position:relative}.needs span:hover{border-color:#9bc5c8}
+.needs b{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:26px;font-weight:400;flex:none}.ic-food{background:#fdecc8}.ic-water{background:#d6ecfa}.ic-medicine{background:#e8dffa}.ic-babysupplies{background:#fbdcea}.ic-other{background:#e3eae6}
+.needs input:checked+span{border-color:var(--teal);background:#e3f1f2;box-shadow:inset 0 0 0 1px var(--teal)}
+.needs input:checked+span::after{content:"\2713";position:absolute;top:-9px;right:-9px;width:24px;height:24px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:14px}
+.needs input:focus-visible+span{outline:3px solid #f2a900}
+label.l{display:block;font-weight:600;margin:12px 0 4px}
+.field{width:100%;min-height:52px;border:2px solid #b9b2a5;border-radius:10px;padding:8px 12px;background:#fff}
+.field:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px #bfe0e2}
+.voice{display:flex;gap:8px}.voice .field{flex:1;min-width:0}
+.btn{min-height:58px;font-size:18px;border:2px solid var(--teal);background:var(--teal);color:#fff;border-radius:12px;font-weight:700;padding:0 18px;cursor:pointer;width:100%;box-shadow:0 4px 12px rgba(11,110,117,.25)}.btn.sec{box-shadow:none}
+.btn.sec{background:#fff;color:var(--teal)}.btn:disabled{opacity:.6;cursor:wait}
+.mic{min-width:84px;border:2px solid var(--teal);background:#fff;color:var(--teal);border-radius:8px;font-weight:700;cursor:pointer}
+.mic.on{background:var(--red);border-color:var(--red);color:#fff}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.stepper{display:flex;align-items:center;gap:10px}.stepper button{width:48px;height:48px;border:2px solid #b9b2a5;border-radius:8px;background:#fff;font-size:24px;cursor:pointer}
+.stepper output{min-width:34px;text-align:center;font-size:22px;font-weight:700}
+.chk{display:flex;gap:12px;align-items:center;min-height:46px}.chk input{width:24px;height:24px;accent-color:var(--teal)}
+.msg{margin:8px 0 0;font-weight:600;color:var(--green)}.msg.bad{color:var(--red)}
+#pmap{height:260px;border:1px solid var(--line);border-radius:8px;margin:10px 0}
+details summary{cursor:pointer;min-height:40px;display:flex;align-items:center;color:var(--teal);font-weight:600}
+.next ol{margin:0;padding-left:20px}.next li{margin-bottom:4px}
+.sos{border-color:var(--red);background:#fdf1ef}.sos h2{color:var(--red)}
+.banner{border-radius:8px;padding:10px 14px;margin-bottom:12px;font-weight:600;border:1px solid}
+.banner.wait{background:#fff3da;color:var(--amber);border-color:#e6c27a}.banner.off{background:#fdf1ef;color:var(--red);border-color:#e3b3ae}
+.banner.ok{background:#e7f4ec;color:var(--green);border-color:#a9d3b9}
+.vgrid{display:grid;gap:14px}
+.bar2{display:grid;gap:8px;margin-bottom:12px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{flex:1;min-width:84px;min-height:44px;border:2px solid #b9b2a5;background:#fff;border-radius:8px;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+#map{height:260px;border:1px solid var(--line);border-radius:10px;order:-1}
+.item{background:#fff;border:1px solid var(--line);border-left:8px solid var(--amber);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 1px 2px rgba(12,45,63,.06),0 6px 16px rgba(12,45,63,.05)}
+.item.claimed{border-left-color:var(--teal)}.item.delivered{border-left-color:var(--green)}.item.urg{border-left-color:var(--red)}
+.item.sel{box-shadow:0 0 0 3px #f2a900}
+.item h3{font-size:18px}.meta{color:var(--mute);font-size:15px}.item p{margin:8px 0 0}
+.tag{display:inline-block;border-radius:6px;padding:2px 10px;font-size:14px;font-weight:700;background:#efeae1;margin-left:6px}
+.tag.urgent{background:var(--red);color:#fff}
+.warn{color:var(--red);font-weight:700;margin-top:6px}
+.call{display:inline-block;margin-top:10px;font-weight:700;color:var(--teal);font-size:18px}
+.item .btn{margin-top:12px}
+.empty{text-align:center;color:var(--mute);padding:28px 8px}
+[hidden]{display:none!important}
+@media(min-width:900px){
+ .hero{grid-template-columns:1.4fr 1fr;align-items:center}
+ body{padding-bottom:0}
+ nav.bar{position:static;display:flex;gap:4px;border:0;background:none;padding:0}
+ nav.bar button{color:#cfe3ea;border:0;border-radius:8px;padding:0 18px;min-height:44px;font-size:16px}
+ nav.bar button.on{background:rgba(255,255,255,.16);color:#fff}
+ #f{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+ #f .l1{grid-column:1}#f .r1{grid-column:2}
+ #pmap{height:340px}
+ .vgrid{grid-template-columns:minmax(0,440px) 1fr;align-items:start}
+ #map{order:0;position:sticky;top:76px;height:calc(100vh - 100px)}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* ---- classic look: single column, bottom navigation, big tiles ---- */
+:root{--teal:#0a7ea4;--bg:#f1f5f7;--line:#d5e0e6}
+body{padding-bottom:84px!important}
+main.wrap,.hd{max-width:640px!important}
+header{border-bottom:0}
+.brand h1,h1,h2,h3{font-family:inherit}.brand h1{font-size:24px}
+nav.bar{position:fixed!important;left:0;right:0;bottom:0;display:grid!important;grid-template-columns:repeat(3,1fr);gap:0!important;background:#fff!important;border-top:1px solid var(--line)!important;padding:0 0 env(safe-area-inset-bottom)!important;max-width:none}
+nav.bar button{color:var(--mute)!important;background:none!important;border:0!important;border-top:3px solid transparent!important;border-radius:0!important;min-height:62px!important;font-size:13px!important}
+nav.bar button.on{color:var(--teal)!important;border-top-color:var(--teal)!important}
+.hero{display:none!important}
+#f{grid-template-columns:1fr!important}#f .l1,#f .r1{grid-column:1!important}
+.card{border-radius:14px;box-shadow:none;padding:16px}
+.card h2,.ct{font-size:18px}.ct i{width:26px;height:26px;font-size:14px}
+.needs{grid-template-columns:repeat(3,1fr)!important;gap:8px}
+.needs span{flex-direction:column;justify-content:center;gap:2px;min-height:84px;padding:6px;text-align:center;font-size:15px;border-radius:12px;font-weight:600}
+.needs b{background:none!important;width:auto;height:auto;font-size:28px}
+.needs input:checked+span{background:#e4f4fa;border-color:var(--teal);font-weight:700}
+.needs input:checked+span::after{display:none}
+.btn{box-shadow:none;border-radius:12px;min-height:54px;font-size:17px}
+.item{border-radius:14px;box-shadow:none}
+.vgrid{grid-template-columns:1fr!important}
+#map{position:relative!important;overflow:hidden;height:220px!important;order:-1;z-index:0}
+#pmap{height:200px!important;position:relative;overflow:hidden;z-index:0}
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-t="skip"></a>
+<header><div class="wrap hd">
+ <div class="brand"><h1 data-t="title"></h1><p data-t="tag"></p></div>
+ <nav class="bar" aria-label="Main">
+  <button id="nHelp" type="button" data-t="nHelp"></button>
+  <button id="nMine" type="button" data-t="nMine"></button>
+  <button id="nVol" type="button" data-t="nVol"></button>
+ </nav>
+ <button class="lang" id="lang" type="button">हिं / EN</button>
+</div></header>
+<main id="main" class="wrap">
+<section id="help">
+ <div class="hero"><div><h2 data-t="hero"></h2><p data-t="intro"></p></div><ol class="flow"><li><b>1</b><span data-t="f1"></span></li><li><b>2</b><span data-t="f2"></span></li><li><b>3</b><span data-t="f3"></span></li></ol></div>
+ <form id="f">
+  <section class="card l1" role="group" aria-labelledby="g1"><h2 class="ct" id="g1"><i>1</i><span data-t="q_need"></span></h2><p class="sub" data-t="needHint"></p><div class="needs" id="needs"></div></section>
+  <section class="card r1" role="group" aria-labelledby="g2"><h2 class="ct" id="g2"><i>2</i><span data-t="s2"></span></h2>
+   <button type="button" class="btn sec" id="loc" data-t="loc"></button>
+   <div class="msg bad" id="locmsg" role="status" aria-live="polite"></div>
+   <div id="pmap" role="application" aria-label="Location map"></div><p class="sub" data-t="mapHint"></p>
+   <label class="l" for="addr" data-t="q_addr"></label>
+   <div class="voice"><input class="field" id="addr" maxlength="120" autocomplete="street-address"><button type="button" class="mic" data-for="addr" data-t="mic"></button></div>
+   <details><summary data-t="manual"></summary><div class="voice"><input class="field" id="lat" type="number" step="any" value="26.8467" aria-label="Latitude"><input class="field" id="lng" type="number" step="any" value="80.9462" aria-label="Longitude"></div></details>
+  </section>
+  <section class="card l1" role="group" aria-labelledby="g3"><h2 class="ct" id="g3"><i>3</i><span data-t="s3"></span></h2><p class="sub" data-t="why"></p>
+   <div class="row"><span id="plabel" data-t="q_people"></span><div class="stepper" role="group" aria-labelledby="plabel"><button type="button" id="minus" aria-label="Fewer">-</button><output id="people" aria-live="polite">1</output><button type="button" id="plus" aria-label="More">+</button></div></div>
+   <label class="chk"><input type="checkbox" id="infant"><span data-t="f_infant"></span></label>
+   <label class="chk"><input type="checkbox" id="elderly"><span data-t="f_elderly"></span></label>
+   <label class="chk"><input type="checkbox" id="medical"><span data-t="f_medical"></span></label>
+   <label class="chk"><input type="checkbox" id="mobility"><span data-t="f_mobility"></span></label>
+  </section>
+  <section class="card l1" role="group" aria-labelledby="g4"><h2 class="ct" id="g4"><i>4</i><span data-t="s4"></span></h2>
+   <label class="l" for="phone" data-t="q_phone" style="margin-top:0"></label>
+   <input class="field" id="phone" type="tel" inputmode="tel" pattern="[0-9+ ]{10,15}" required aria-describedby="phh">
+   <p class="sub" id="phh" data-t="phoneHelp"></p>
+   <label class="l" for="d" data-t="q_note"></label>
+   <div class="voice"><textarea class="field" id="d" rows="3" maxlength="170" aria-describedby="dh"></textarea><button type="button" class="mic" data-for="d" data-t="mic"></button></div>
+   <p class="sub" id="dh" data-t="noteEx"></p>
+  </section>
+  <div class="l1"><button class="btn" id="send" type="submit" data-t="send"></button><div class="msg bad" id="msg" role="status" aria-live="polite"></div></div>
+  <section class="card r1 next"><h2 data-t="next_h"></h2><ol><li data-t="next1"></li><li data-t="next2"></li><li data-t="next3"></li></ol><p class="sub" data-t="next4"></p></section>
+  <section class="card r1 sos"><h2 data-t="sos_h"></h2><p style="margin:0" data-t="sos"></p></section>
+ </form>
+</section>
+<section id="mine" hidden>
+ <div id="confirm"></div><div id="mineBanner"></div>
+ <h2 style="margin-bottom:12px" data-t="nMine"></h2><div id="mineList"></div>
+</section>
+<section id="vol" hidden>
+ <div class="banner off" id="net" hidden role="status" data-t="offline"></div>
+ <div class="vgrid">
+  <div id="map" role="application" aria-label="Request map"></div>
+  <div>
+   <label class="l" for="me" data-t="name" style="margin-top:0"></label>
+   <input class="field" id="me" autocomplete="name" style="margin-bottom:10px">
+   <div class="bar2"><div class="seg" id="seg" role="group" aria-label="Status"></div>
+    <select class="field" id="ftype" aria-label="Type"></select></div>
+   <div id="list" aria-live="polite"></div>
+  </div>
+ </div>
+</section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+const API=new URLSearchParams(location.search).get("api")||"http://127.0.0.1:3000";
+const NEEDS=["food","water","medicine","baby supplies","other"],ICON={food:"🍚",water:"💧",medicine:"💊","baby supplies":"🍼",other:"📦"};
+const T={
+en:{hero:"Need help? Tell us in a minute.",f1:"You send a request",f2:"A volunteer accepts it",f3:"Supplies reach you",skip:"Skip to content",title:"Rahat",tag:"Flood relief requests",nHelp:"Request Help",nMine:"My Requests",nVol:"Volunteer",
+intro:"Tell us what you need. It takes about a minute. Volunteers nearby will see your request.",q_need:"What do you need?",needHint:"Choose one. Mention anything else in the note below.",
+n_food:"Food",n_water:"Drinking water","n_baby supplies":"Baby supplies",n_medicine:"Medicine",n_other:"Other essentials",
+s2:"Where are you?",loc:"Use my current location",locOk:"Location saved. Check the pin on the map.",locNo:"Location not set. Use the button, tap the map, or type your address.",
+locErr:"Could not get your location. Tap the map or type your address.",mapHint:"You can also tap the map to place the pin.",q_addr:"Address or nearby landmark",manual:"Enter latitude and longitude",
+s3:"Who needs help?",why:"This helps volunteers decide who to reach first.",q_people:"Number of people",f_infant:"A baby or young child",f_elderly:"An elderly person",
+f_medical:"Someone is sick or needs medicine",f_mobility:"Someone has difficulty moving",s4:"How can we contact you?",q_phone:"Phone number",
+phoneHelp:"Only the volunteer who accepts your request will see this number.",q_note:"Anything else volunteers should know",noteEx:"For example: water is entering the ground floor.",
+send:"Request help",sending:"Sending...",next_h:"What happens next",next1:"Your request appears on the volunteer map.",next2:"A volunteer accepts it and may call you.",
+next3:"Follow the status under My Requests.",next4:"Sending a request does not guarantee immediate help.",sos_h:"In immediate danger?",sos:"Call 112 first. Rahat does not replace emergency services.",
+sent_h:"Request sent",sent_id:"Request ID",saved:"No network. Your request is saved on this phone and will be sent automatically when the network returns.",
+pending:"waiting to send",queued:"Waiting for network",mineEmpty:"You have not sent any request from this phone yet.",loading:"Loading requests...",
+offline:"Cannot reach the server. Showing the last saved list.",name:"Your name (needed to accept requests)",fOpen:"Open",fAcc:"Accepted",fDel:"Delivered",fAll:"All",fType:"All types",
+s_requested:"Awaiting volunteer",s_claimed:"Accepted by a volunteer",s_delivered:"Delivered",urgent:"Urgent",reopened:"Not delivered in time. Open again.",
+claim:"Accept this request",deliver:"Mark as delivered",note:"What did you deliver?",call:"Call",empty:"No requests match.",taken:"Someone else already accepted this.",
+needName:"Enter your name first.",people:"people",fail:"Something went wrong. Try again.",ago0:"just now",agoM:"{n} min ago",agoH:"{n} h ago",
+mic:"Speak",micStop:"Stop",micNo:"Voice needs a network and Chrome. Please type instead.",approx:"(map pin approximate)"},
+hi:{hero:"मदद चाहिए? एक मिनट में बताइए।",f1:"आप अनुरोध भेजें",f2:"स्वयंसेवक स्वीकार करे",f3:"सामान आप तक पहुँचे",skip:"मुख्य सामग्री पर जाएँ",title:"राहत",tag:"बाढ़ राहत अनुरोध",nHelp:"मदद माँगें",nMine:"मेरे अनुरोध",nVol:"स्वयंसेवक",
+intro:"बताइए आपको क्या चाहिए। इसमें लगभग एक मिनट लगेगा। आस-पास के स्वयंसेवक आपका अनुरोध देखेंगे।",q_need:"आपको क्या चाहिए?",needHint:"एक चुनें। बाकी बातें नीचे नोट में लिखें।",
+n_food:"खाना",n_water:"पीने का पानी","n_baby supplies":"बच्चे का सामान",n_medicine:"दवा",n_other:"ज़रूरी सामान",
+s2:"आप कहाँ हैं?",loc:"मेरी मौजूदा लोकेशन लगाएँ",locOk:"लोकेशन सेव हो गई। नक्शे पर पिन देखें।",locNo:"लोकेशन नहीं डाली। बटन दबाएँ, नक्शे पर टैप करें या पता लिखें।",
+locErr:"लोकेशन नहीं मिली। नक्शे पर टैप करें या पता लिखें।",mapHint:"आप नक्शे पर टैप करके भी पिन लगा सकते हैं।",q_addr:"पता या पास की कोई पहचान",manual:"अक्षांश और देशांतर खुद डालें",
+s3:"किसे मदद चाहिए?",why:"इससे स्वयंसेवकों को तय करने में मदद मिलती है कि पहले किसके पास जाएँ।",q_people:"कितने लोग हैं",f_infant:"शिशु या छोटा बच्चा",f_elderly:"बुज़ुर्ग",
+f_medical:"कोई बीमार है या दवा चाहिए",f_mobility:"किसी को चलने-फिरने में दिक्कत है",s4:"हम आपसे कैसे संपर्क करें?",q_phone:"फ़ोन नंबर",
+phoneHelp:"केवल आपका अनुरोध स्वीकार करने वाला स्वयंसेवक यह नंबर देखेगा।",q_note:"स्वयंसेवकों को और कुछ बताना हो तो लिखें",noteEx:"जैसे: निचली मंज़िल में पानी भर रहा है।",
+send:"मदद माँगें",sending:"भेजा जा रहा है...",next_h:"आगे क्या होगा",next1:"आपका अनुरोध स्वयंसेवकों के नक्शे पर दिखेगा।",next2:"कोई स्वयंसेवक इसे स्वीकार करेगा और आपको फ़ोन कर सकता है।",
+next3:"'मेरे अनुरोध' में स्थिति देखें।",next4:"अनुरोध भेजने से तुरंत मदद की गारंटी नहीं है।",sos_h:"तुरंत ख़तरे में हैं?",sos:"पहले 112 पर फ़ोन करें। राहत आपातकालीन सेवाओं का विकल्प नहीं है।",
+sent_h:"अनुरोध भेज दिया गया",sent_id:"अनुरोध नंबर",saved:"नेटवर्क नहीं है। आपका अनुरोध इस फ़ोन में सेव है और नेटवर्क आते ही अपने-आप भेज दिया जाएगा।",
+pending:"भेजना बाकी",queued:"नेटवर्क का इंतज़ार",mineEmpty:"इस फ़ोन से अभी कोई अनुरोध नहीं भेजा गया।",loading:"अनुरोध लोड हो रहे हैं...",
+offline:"सर्वर नहीं मिल रहा। पिछली सेव सूची दिख रही है।",name:"आपका नाम (अनुरोध स्वीकार करने के लिए)",fOpen:"खुले",fAcc:"स्वीकृत",fDel:"पहुँचे",fAll:"सभी",fType:"सभी प्रकार",
+s_requested:"स्वयंसेवक का इंतज़ार",s_claimed:"स्वयंसेवक ने स्वीकार किया",s_delivered:"पहुँच गया",urgent:"ज़रूरी",reopened:"समय पर नहीं पहुँचा। फिर से खुला।",
+claim:"यह अनुरोध स्वीकार करें",deliver:"पहुँचा दिया",note:"क्या पहुँचाया?",call:"फ़ोन करें",empty:"कोई अनुरोध नहीं मिला।",taken:"इसे किसी और ने स्वीकार कर लिया है।",
+needName:"पहले अपना नाम लिखें।",people:"लोग",fail:"कुछ गड़बड़ हुई। फिर कोशिश करें।",ago0:"अभी",agoM:"{n} मिनट पहले",agoH:"{n} घंटे पहले",
+mic:"बोलें",micStop:"रोकें",micNo:"आवाज़ के लिए नेटवर्क और Chrome चाहिए। कृपया लिखकर बताएँ।",approx:"(नक्शे पर जगह अनुमानित)"}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+let lang=store.get("lang","en"),tab=store.get("tab","help"),fs="open",ft="all",sel=null,data=store.get("cache",[]),loaded=data.length>0,
+ locSet=false,flushing=false,busy=false,fitted=false,people=1,justSent=false;
+const phones=store.get("ph",{}),t=k=>T[lang][k]||k,me=()=>$("#me").value.trim();
+const ago=m=>m<1?t("ago0"):m<60?t("agoM").replace("{n}",m):t("agoH").replace("{n}",Math.floor(m/60));
+
+function applyLang(){
+  document.documentElement.lang=lang;document.title=t("title");
+  document.querySelectorAll("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));
+  const cur=document.querySelector("input[name=need]:checked")?.value;
+  $("#needs").innerHTML=NEEDS.map(n=>`<label><input type="radio" name="need" value="${n}" required ${n===cur?"checked":""}><span><b class="ic-${n.replace(' ','')}" aria-hidden="true">${ICON[n]}</b>${esc(t("n_"+n))}</span></label>`).join("");
+  $("#seg").innerHTML=[["open","fOpen"],["acc","fAcc"],["del","fDel"],["all","fAll"]].map(([k,l])=>`<button type="button" data-f="${k}" class="${fs===k?"on":""}" aria-pressed="${fs===k}">${t(l)}</button>`).join("");
+  $("#ftype").innerHTML=`<option value="all">${t("fType")}</option>`+NEEDS.map(n=>`<option value="${n}" ${ft===n?"selected":""}>${esc(t("n_"+n))}</option>`).join("");
+  if(!locSet){$("#locmsg").className="msg bad";$("#locmsg").textContent=t("locNo")}
+  document.querySelectorAll(".mic:not(.on)").forEach(b=>b.textContent=t("mic"));
+  pending();renderMine();renderVol();
+}
+$("#lang").onclick=()=>{lang=lang==="en"?"hi":"en";store.set("lang",lang);applyLang()};
+$("#seg").onclick=e=>{const b=e.target.closest("[data-f]");if(b){fs=b.dataset.f;applyLang()}};
+$("#ftype").onchange=e=>{ft=e.target.value;renderVol()};
+
+function show(x,fresh){
+  tab=x;justSent=!!fresh;store.set("tab",x);
+  ["help","mine","vol"].forEach(k=>{const on=k===x;$("#"+k).hidden=!on;const b=$("#n"+k[0].toUpperCase()+k.slice(1));b.classList.toggle("on",on);on?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current")});
+  [50,400,1200].forEach(ms=>setTimeout(()=>{map.invalidateSize();pmap.invalidateSize()},ms));
+  scrollTo(0,0);load();
+}
+$("#nHelp").onclick=()=>show("help");$("#nMine").onclick=()=>show("mine");$("#nVol").onclick=()=>show("vol");
+
+/* ---- location (never mandatory) ---- */
+const pmap=L.map("pmap").setView([26.8467,80.9462],12);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap"}).addTo(pmap);
+let pin=null;
+function setLoc(lat,lng){
+  $("#lat").value=(+lat).toFixed(5);$("#lng").value=(+lng).toFixed(5);locSet=true;
+  $("#locmsg").className="msg";$("#locmsg").textContent=t("locOk")+" ("+(+lat).toFixed(4)+", "+(+lng).toFixed(4)+")";
+  if(pin)pin.setLatLng([lat,lng]);else pin=L.circleMarker([lat,lng],{radius:11,color:"#fff",weight:3,fillColor:"#0b6e75",fillOpacity:1}).addTo(pmap);
+  pmap.setView([lat,lng],Math.max(pmap.getZoom(),15));
+}
+pmap.on("click",e=>setLoc(e.latlng.lat,e.latlng.lng));
+["#lat","#lng"].forEach(s=>$(s).addEventListener("change",()=>setLoc(+$("#lat").value,+$("#lng").value)));
+$("#loc").onclick=()=>{
+  const bad=()=>{$("#locmsg").className="msg bad";$("#locmsg").textContent=t("locErr")};
+  if(!navigator.geolocation)return bad();
+  navigator.geolocation.getCurrentPosition(p=>setLoc(p.coords.latitude,p.coords.longitude),bad,{enableHighAccuracy:true,timeout:10000});
+};
+const setP=n=>{people=Math.min(Math.max(n,1),50);$("#people").textContent=people};
+$("#minus").onclick=()=>setP(people-1);$("#plus").onclick=()=>setP(people+1);
+
+/* ---- submit + offline queue ---- */
+function pending(){
+  const n=store.get("q",[]).length;
+  $("#mineBanner").innerHTML=n?`<div class="banner wait" role="status">${n} ${t("pending")}. ${t("saved")}</div>`:"";
+}
+async function flush(){
+  const q=store.get("q",[]);if(!q.length||flushing)return;
+  flushing=true;const rest=[],mine=store.get("mine",[]);
+  for(const p of q){
+    try{
+      const r=await fetch(API+"/requests",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});
+      if(r.ok){const j=await r.json();mine.unshift({id:j.requestId,need:p.need});store.set("last",j.requestId)}
+      else if(r.status>=500)rest.push(p);
+    }catch{rest.push(p)}
+  }
+  store.set("q",rest);store.set("mine",mine.slice(0,30));flushing=false;pending();
+  if(rest.length<q.length)load();
+}
+$("#f").onsubmit=async e=>{
+  e.preventDefault();if(busy)return;
+  const addr=$("#addr").value.trim(),btn=$("#send");
+  if(!locSet&&!addr){$("#locmsg").className="msg bad";$("#locmsg").textContent=t("locNo");$("#loc").focus();return}
+  const p={need:document.querySelector("input[name=need]:checked").value,
+    description:[!locSet&&t("approx"),addr,$("#mobility").checked&&t("f_mobility"),$("#d").value.trim()].filter(Boolean).join(" - ").slice(0,300),
+    people,infant:$("#infant").checked,elderly:$("#elderly").checked,medical:$("#medical").checked,
+    lat:+$("#lat").value,lng:+$("#lng").value,phone:$("#phone").value};
+  busy=true;btn.disabled=true;btn.textContent=t("sending");$("#msg").textContent="";
+  store.set("q",[...store.get("q",[]),p]);pending();
+  await flush();
+  busy=false;btn.disabled=false;btn.textContent=t("send");
+  if(!store.get("q",[]).length){e.target.reset();setP(1);$("#lat").value=p.lat;$("#lng").value=p.lng}
+  show("mine",true);
+};
+addEventListener("online",flush);setInterval(flush,20000);
+
+/* ---- voice ---- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null;
+document.querySelectorAll(".mic").forEach(b=>b.onclick=()=>{
+  if(rec){rec.stop();return}
+  if(!SR){alert(t("micNo"));return}
+  const el=$("#"+b.dataset.for);
+  rec=new SR();rec.lang=lang==="hi"?"hi-IN":"en-IN";rec.interimResults=false;
+  b.classList.add("on");b.textContent=t("micStop");
+  rec.onresult=e=>{const s=Array.from(e.results).map(r=>r[0].transcript).join(" ").trim();
+    el.value=((el.value?el.value+" ":"")+s).slice(0,el.id==="d"?170:120)};
+  rec.onerror=e=>alert(t("micNo")+" ("+e.error+")");
+  rec.onend=()=>{b.classList.remove("on");b.textContent=t("mic");rec=null};
+  try{rec.start()}catch{rec=null;b.classList.remove("on");b.textContent=t("mic")}
+});
+
+/* ---- my requests ---- */
+function renderMine(){
+  const mine=store.get("mine",[]),q=store.get("q",[]),last=store.get("last","");
+  $("#confirm").innerHTML=justSent&&last&&!q.length?`<div class="banner ok" role="status"><h2 style="font-size:19px">${t("sent_h")}</h2>${t("sent_id")}: <b>${esc(last.slice(0,8).toUpperCase())}</b><br>${t("next1")} ${t("next4")} ${t("sos_h")} ${t("sos")}</div>`:"";
+  const rows=q.map(p=>`<article class="item"><div class="row"><h3>${esc(t("n_"+p.need))}</h3><span class="tag">${t("queued")}</span></div></article>`)
+   .concat(mine.map(m=>{
+    const r=data.find(x=>x.requestId===m.id),st=r?r.status:"requested";
+    return `<article class="item ${st}"><div class="row"><h3>${esc(t("n_"+m.need))}</h3><span class="tag">${t("s_"+st)}</span></div>
+<div class="meta">${t("sent_id")}: ${esc(m.id.slice(0,8).toUpperCase())}${r?", "+ago(r.waitingMinutes):""}</div>${r&&r.description?`<p>${esc(r.description)}</p>`:""}</article>`}));
+  $("#mineList").innerHTML=rows.length?rows.join(""):`<div class="empty">${t("mineEmpty")}</div>`;
+}
+
+/* ---- volunteer: map and list work together ---- */
+const map=L.map("map").setView([26.8467,80.9462],12);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap"}).addTo(map);
+const layer=L.layerGroup().addTo(map),marks={};
+const COL={requested:"#c27a00",claimed:"#0b6e75",delivered:"#1c7a4a"};
+$("#me").value=store.get("me","");$("#me").oninput=e=>{store.set("me",e.target.value.trim());renderVol()};
+
+async function load(){
+  try{const r=await fetch(API+"/requests");if(!r.ok)throw 0;data=await r.json();store.set("cache",data);$("#net").hidden=true}
+  catch{$("#net").hidden=false}
+  loaded=true;renderMine();renderVol();
+}
+const urgent=r=>r.urgency>=70&&r.status==="requested";
+function filtered(){
+  return data.filter(r=>(fs==="all"||r.status===({open:"requested",acc:"claimed",del:"delivered"})[fs])&&(ft==="all"||r.need===ft));
+}
+function renderVol(){
+  const list=filtered();
+  layer.clearLayers();Object.keys(marks).forEach(k=>delete marks[k]);
+  list.forEach(r=>{
+    const m=L.circleMarker([r.lat,r.lng],{radius:urgent(r)?12:9,color:"#fff",weight:2,fillColor:urgent(r)?"#b3261e":COL[r.status],fillOpacity:.95})
+      .addTo(layer).bindPopup(`<b>${esc(t("n_"+r.need))}</b><br>${esc(t("s_"+r.status))}`);
+    m.on("click",()=>pick(r.requestId,true));marks[r.requestId]=m;
+  });
+  if(list.length&&!fitted&&tab==="vol"){map.fitBounds(list.map(r=>[r.lat,r.lng]),{padding:[30,30],maxZoom:15});fitted=true}
+  $("#list").innerHTML=!loaded?`<div class="empty">${t("loading")}</div>`:list.length?list.map(item).join(""):`<div class="empty">${t("empty")}</div>`;
+}
+function item(r){
+  const fl=[r.infant&&t("f_infant"),r.elderly&&t("f_elderly"),r.medical&&t("f_medical")].filter(Boolean).join(", ");
+  let act="";
+  if(r.status==="requested")act=`<button class="btn" data-a="claim" data-id="${r.requestId}">${t("claim")}</button>`;
+  else if(r.status==="claimed"&&r.claimedBy===me())act=`<button class="btn" data-a="deliver" data-id="${r.requestId}">${t("deliver")}</button>`;
+  const ph=phones[r.requestId];
+  return `<article class="item ${urgent(r)?"urg":r.status} ${sel===r.requestId?"sel":""}" id="r-${r.requestId}" tabindex="0">
+<div class="row"><h3>${ICON[r.need]} ${esc(t("n_"+r.need))}</h3><span>${urgent(r)?`<span class="tag urgent">${t("urgent")}</span>`:""}<span class="tag">${t("s_"+r.status)}</span></span></div>
+<div class="meta">${r.people} ${t("people")}, ${ago(r.waitingMinutes)}${fl?". "+esc(fl):""}</div>
+${r.description?`<p>${esc(r.description)}</p>`:""}${r.reopened?`<div class="warn">${t("reopened")}</div>`:""}
+${ph?`<a class="call" href="tel:${esc(ph)}">${t("call")} ${esc(ph)}</a>`:""}${act}</article>`;
+}
+function pick(id,fromMap){
+  sel=id;
+  document.querySelectorAll("#list .item.sel").forEach(e=>e.classList.remove("sel"));
+  const el=document.getElementById("r-"+id);if(el){el.classList.add("sel");if(fromMap)el.scrollIntoView({block:"nearest",behavior:"smooth"})}
+  const r=data.find(x=>x.requestId===id),m=marks[id];
+  if(r&&m){if(!fromMap)map.setView([r.lat,r.lng],Math.max(map.getZoom(),15));m.openPopup()}
+}
+$("#list").onclick=async e=>{
+  const b=e.target.closest("button[data-a]");
+  if(!b){const c=e.target.closest(".item");if(c)pick(c.id.slice(2));return}
+  if(!me()){alert(t("needName"));$("#me").focus();return}
+  const action=b.dataset.a,id=b.dataset.id,note=action==="deliver"?(prompt(t("note"))||""):"";
+  b.disabled=true;
+  try{
+    const r=await fetch(`${API}/requests/${id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,volunteer:me(),note})});
+    if(r.status===409)alert(t("taken"));
+    else if(r.ok){const j=await r.json();if(j.phone){phones[id]=j.phone;store.set("ph",phones)}}
+    else alert(t("fail"));
+  }catch{alert(t("fail"))}
+  load();
+};
+$("#list").onkeydown=e=>{if(e.key==="Enter"&&e.target.classList.contains("item"))pick(e.target.id.slice(2))};
+setInterval(load,15000);
+
+applyLang();show(tab);flush();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
